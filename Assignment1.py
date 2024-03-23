@@ -16,8 +16,9 @@ min_confidence = float(input("Enter min_confidence: "))
 
 # Groupby Transactions into a new datafame and sample a fraction of them
 TransactionsData = OriginData.groupby(["TransactionNo"]).agg(list).reset_index()
-TransactionsCount = OriginData["TransactionNo"].max()
 TransactionsDataSample = TransactionsData.sample(frac=sample_size).sort_index()
+TransactionsCount = len(TransactionsDataSample)
+print(TransactionsCount)
 
 # filter items based on the sample transactions and groupby items
 data = OriginData.loc[OriginData["TransactionNo"].isin(TransactionsDataSample["TransactionNo"])]
@@ -48,18 +49,18 @@ History = [dataC1]
 
 # Intersect the 2 n-itemsets to create n+1itemset
 # and append to history
+currentItemSets = []
 for index1, row1 in dataC1.iterrows():
     for index2, row2 in dataC1.iterrows():
 
         newItemSet = list(set(row1["Items"]) | set(row2["Items"]))
-        if(len(newItemSet) == (len(row1["Items"])+1)):
-
+        if newItemSet not in currentItemSets and len(newItemSet) == (len(row1["Items"])+1):
+            currentItemSets.insert(len(currentItemSets),newItemSet)
             newTransactions = list(set(row1["TransactionNo"]) & set(row2["TransactionNo"]))
             newRow = {"Items":newItemSet, "TransactionNo":newTransactions, "Frequency": len(newTransactions)}
             dataR.loc[-1] = newRow
             dataR.index = dataR.index + 1
             dataR = dataR.sort_index()
-
             History.insert(len(History),dataR)
 
 # filter out itemsets that are smaller than the min_support
