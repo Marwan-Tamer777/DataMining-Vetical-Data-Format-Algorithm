@@ -88,15 +88,18 @@ while(flag !=1):
         history.insert(len(history),dataR)
 
 
+
+
 # # Find all subsets of size k  
 # subsets = list(itertools.combinations(s, k))
         
 # # Remove a subset from an item set
 #  a= list(set(a) - set(b))
-        
+strongRules = []
 for index, row in frequentItemsets.iterrows():
     # EX: itemset = {coffee, cat , bat}
     itemSet = row["Items"]
+    itemSetFreq = row["Frequency"]
     setSize = len(row["Items"])
     for x in range(1,setSize):
         subsets = list(itertools.combinations(itemSet, x))
@@ -105,6 +108,13 @@ for index, row in frequentItemsets.iterrows():
             ruleSubset = list(set(itemSet) - set(subset))
             # EX: ruleSubset = {cat}
 
+            for indexH,rowH in history[x-1].iterrows():
+                if(rowH["Items"] == list(subset)):
+                    subsetFreq = rowH["Frequency"]
+            
+            if(itemSetFreq/subsetFreq>=min_confidence):
+                print("STRONG RULE", subset, "-->", ruleSubset , ". ", itemSetFreq/subsetFreq)
 
-print(frequentItemsets)
-print(data)
+
+# print(frequentItemsets)
+# print(data)
