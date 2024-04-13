@@ -1,14 +1,16 @@
 # importing libraries
 import pandas as pd
 from util import generateFrequentItemSets,generateStrongRules, colored
+import easygui
 
+file = easygui.fileopenbox("Please choose the excel file: ")
 # load data 
-OriginData = pd.read_csv("Bakery.csv",usecols = ["TransactionNo", "Items"])
+OriginData = pd.read_csv(file)#pd.read_csv("Bakery.csv",usecols = ["TransactionNo", "Items"])
 
 # Get sample size, min support and confidence from use
-sample_size = float(input("Enter sample_size as fraction: "))
-min_support = float(input("Enter min_support: "))
-min_confidence = float(input("Enter min_confidence: "))
+sample_size = float(easygui.enterbox("Enter sample_size as fraction: "))#float(input("Enter sample_size as fraction: "))
+min_support = float(easygui.enterbox("Enter min_support: "))#float(input("Enter min_support: "))
+min_confidence = float(easygui.enterbox("Enter min_confidence: "))#float(input("Enter min_confidence: "))
 
 # Groupby transactions into a new datafame and sample a fraction of them
 transactionsData = OriginData.groupby(["TransactionNo"]).agg(list).reset_index()
@@ -49,3 +51,10 @@ print("StrongRules:")
 
 for rule in strongRules:
     print(colored(255, 0, 0,rule))
+
+
+msg ="Frequent ItemSets:\n" + frequentItemsets.to_string() + "\n" + "Strong Rules:\n"
+for rule in strongRules:
+    msg += ''.join(rule) + "\n"
+
+easygui.msgbox(title="Results",msg=msg)
